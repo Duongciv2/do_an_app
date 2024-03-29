@@ -7,6 +7,7 @@ import Header from '../components/Header'
 import Button from '../components/Button'
 import TextInput from '../components/TextInput'
 import BackButton from '../components/BackButton'
+import LoginService from '../components/LoginService'
 import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
@@ -71,6 +72,12 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.link}>Đăng kí</Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.loginServiceContainer}>
+        <Text style={styles.loginServiceText}> Hoặc đăng nhập bằng</Text>
+      </View>
+      <View style={styles.loginService}>
+      <LoginService style={styles.LoginService} />
+      </View>
     </Background>
   )
 }
@@ -92,5 +99,15 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: 'bold',
     color: theme.colors.primary,
+  },
+  loginServiceContainer: {
+    marginTop: 50,
+    alignItems: 'center',
+  },
+  loginServiceText: {
+    marginBottom: 20,
+  },
+  loginService: {
+    height: 15,
   },
 })
