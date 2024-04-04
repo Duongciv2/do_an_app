@@ -16,7 +16,7 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
-  const onLoginPressed = () => {
+  const handleSubmit = () => {
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError) {
@@ -24,10 +24,35 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
+    console.log(email.value, password.value);
+    fetch("http://172.20.10.7:5000/login-user", {
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
     })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data, "userRegistered");
+        if (data.status !== "error") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Dashboard' }],
+          });
+        } else {
+          console.error("Đăng nhập thất bại:", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Lỗi khi gọi API:", error);
+      });
   }
 
   return (
@@ -63,7 +88,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
-      <Button mode="contained" onPress={onLoginPressed}>
+      <Button mode="contained" onPress={handleSubmit}>
         Đăng nhập
       </Button>
       <View style={styles.row}>
@@ -76,7 +101,7 @@ export default function LoginScreen({ navigation }) {
         <Text style={styles.loginServiceText}> Hoặc đăng nhập bằng</Text>
       </View>
       <View style={styles.loginService}>
-      <LoginService style={styles.LoginService} />
+        <LoginService style={styles.LoginService} />
       </View>
     </Background>
   )

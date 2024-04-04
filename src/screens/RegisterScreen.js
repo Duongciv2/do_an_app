@@ -10,27 +10,57 @@ import BackButton from '../components/BackButton'
 import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
-import { nameValidator } from '../helpers/nameValidator'
 
 export default function RegisterScreen({ navigation }) {
-  const [name, setName] = useState({ value: '', error: '' })
+  const [firstName, setFirstName] = useState({ value: '', error: '' })
+  const [lastName, setLastName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
   const onSignUpPressed = () => {
-    const nameError = nameValidator(name.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError })
+
+    if (emailError || passwordError) {
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
       return
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
+
+    handleSubmit();
+  }
+
+  const handleSubmit = () => {
+    console.log(firstName.value, lastName.value, email.value, password.value);
+    fetch("http://172.20.10.7:5000/register", {
+      method:"POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type":"application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        firstName: firstName.value,
+        lastName: lastName.value,
+        email: email.value,
+        password: password.value,
+      }),
+    }).then((res) => res.json())
+    .then((data) => {
+      console.log(data, "userRegistered");
+      if (data.status !== "error") {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Dashboard' }],
+        });
+      } else {
+        console.error("Đăng ký thất bại:", data);
+      }
     })
+    .catch((error) => {
+      console.error("Lỗi khi gọi API:", error);
+    });
   }
 
   return (
@@ -39,12 +69,16 @@ export default function RegisterScreen({ navigation }) {
       <Logo />
       <Header>Tạo tài khoản mới</Header>
       <TextInput
-        label="Tên"
+        label="First Name"
         returnKeyType="next"
-        value={name.value}
-        onChangeText={(text) => setName({ value: text, error: '' })}
-        error={!!name.error}
-        errorText={name.error}
+        value={firstName.value}
+        onChangeText={(text) => setFirstName({ value: text, error: '' })}
+      />
+      <TextInput
+        label="Last Name"
+        returnKeyType="next"
+        value={lastName.value}
+        onChangeText={(text) => setLastName({ value: text, error: '' })}
       />
       <TextInput
         label="Email"
@@ -67,11 +101,7 @@ export default function RegisterScreen({ navigation }) {
         errorText={password.error}
         secureTextEntry
       />
-      <Button
-        mode="contained"
-        onPress={onSignUpPressed}
-        style={{ marginTop: 24 }}
-      >
+      <Button mode="contained" onPress={onSignUpPressed} style={{ marginTop: 24 }}>
         Đăng kí
       </Button>
       <View style={styles.row}>
@@ -93,4 +123,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.primary,
   },
-})
+}) 

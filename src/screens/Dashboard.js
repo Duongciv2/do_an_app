@@ -18,11 +18,11 @@ export default function Dashboard({ navigation }) {
         onPress={() =>
           navigation.reset({
             index: 0,
-            routes: [{ name: 'StartScreen' }],
+            routes: [{ name: 'AddTaskScreen' }],
           })
         }
       >
-        Đăng xuất
+        Tiếp tục
       </Button>
     </Background>
   )
