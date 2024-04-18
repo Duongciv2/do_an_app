@@ -1,66 +1,54 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, TouchableOpacity } from 'react-native'
-import { Text } from 'react-native-paper'
-import Background from '../components/Background'
-import Logo from '../components/Logo'
-import Header from '../components/Header'
-import Button from '../components/Button'
-import TextInput from '../components/TextInput'
-import BackButton from '../components/BackButton'
-import { theme } from '../core/theme'
-import { emailValidator } from '../helpers/emailValidator'
-import { passwordValidator } from '../helpers/passwordValidator'
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text } from 'react-native-paper';
+import Background from '../components/Background';
+import Logo from '../components/Logo';
+import Header from '../components/Header';
+import Button from '../components/Button';
+import TextInput from '../components/TextInput';
+import BackButton from '../components/BackButton';
+import { theme } from '../core/theme';
+import { emailValidator } from '../helpers/emailValidator';
+import { passwordValidator } from '../helpers/passwordValidator';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 export default function RegisterScreen({ navigation }) {
-  const [firstName, setFirstName] = useState({ value: '', error: '' })
-  const [lastName, setLastName] = useState({ value: '', error: '' })
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const navigationHelper = useNavigation();
+  const [firstName, setFirstName] = useState({ value: '', error: '' });
+  const [lastName, setLastName] = useState({ value: '', error: '' });
+  const [email, setEmail] = useState({ value: '', error: '' });
+  const [password, setPassword] = useState({ value: '', error: '' });
 
   const onSignUpPressed = () => {
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
-
+    const emailError = emailValidator(email.value);
+    const passwordError = passwordValidator(password.value);
     if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      return
+      setEmail({ ...email, error: emailError });
+      setPassword({ ...password, error: passwordError });
+      return;
     }
 
+    // Chỉ gọi handleSubmit khi không có lỗi
     handleSubmit();
-  }
+  };
 
-  const handleSubmit = () => {
-    console.log(firstName.value, lastName.value, email.value, password.value);
-    fetch("http://172.20.10.7:5000/register", {
-      method:"POST",
-      crossDomain: true,
-      headers: {
-        "Content-Type":"application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        firstName: firstName.value,
-        lastName: lastName.value,
-        email: email.value,
-        password: password.value,
-      }),
-    }).then((res) => res.json())
-    .then((data) => {
-      console.log(data, "userRegistered");
-      if (data.status !== "error") {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Dashboard' }],
-        });
-      } else {
-        console.error("Đăng ký thất bại:", data);
-      }
-    })
-    .catch((error) => {
-      console.error("Lỗi khi gọi API:", error);
-    });
+  function handleSubmit() {
+    const userData = {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      password: password.value,
+    };
+
+    console.log("Dữ liệu người dùng:", userData);
+    axios
+      .post("http://172.20.10.7:5001/register", userData)
+      .then((res) => {
+        console.log(res.data);
+        navigationHelper.replace('LoginScreen');
+      })
+      .catch((e) => console.log(e));
   }
 
   return (
@@ -102,7 +90,7 @@ export default function RegisterScreen({ navigation }) {
         secureTextEntry
       />
       <Button mode="contained" onPress={onSignUpPressed} style={{ marginTop: 24 }}>
-        Đăng kí
+        Đăng ký
       </Button>
       <View style={styles.row}>
         <Text>Bạn đã có tài khoản </Text>
@@ -111,7 +99,7 @@ export default function RegisterScreen({ navigation }) {
         </TouchableOpacity>
       </View>
     </Background>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -123,4 +111,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.primary,
   },
-}) 
+});

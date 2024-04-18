@@ -1,59 +1,59 @@
-import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, View } from 'react-native'
-import { Text } from 'react-native-paper'
-import Background from '../components/Background'
-import Logo from '../components/Logo'
-import Header from '../components/Header'
-import Button from '../components/Button'
-import TextInput from '../components/TextInput'
-import BackButton from '../components/BackButton'
-import LoginService from '../components/LoginService'
-import { theme } from '../core/theme'
-import { emailValidator } from '../helpers/emailValidator'
-import { passwordValidator } from '../helpers/passwordValidator'
+import React, { useState } from 'react';
+import { TouchableOpacity, StyleSheet, View, Alert, ActivityIndicator } from 'react-native';
+import { Text } from 'react-native-paper';
+import Background from '../components/Background';
+import Logo from '../components/Logo';
+import Header from '../components/Header';
+import Button from '../components/Button';
+import TextInput from '../components/TextInput';
+import BackButton from '../components/BackButton';
+import LoginService from '../components/LoginService';
+import { theme } from '../core/theme';
+import { emailValidator } from '../helpers/emailValidator';
+import { passwordValidator } from '../helpers/passwordValidator';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [email, setEmail] = useState({ value: '', error: '' });
+  const [password, setPassword] = useState({ value: '', error: '' });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
+    const emailError = emailValidator(email.value);
+    const passwordError = passwordValidator(password.value);
+
     if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      return
-    }
-    console.log(email.value, password.value);
-    fetch("http://172.20.10.7:5000/login-user", {
-      method: "POST",
-      crossDomain: true,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
+      setEmail({ ...email, error: emailError });
+      setPassword({ ...password, error: passwordError });
+    } else {
+      setIsLoading(true);
+      const userData = {
         email: email.value,
-        password: password.value,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data, "userRegistered");
-        if (data.status !== "error") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Dashboard' }],
-          });
-        } else {
-          console.error("Đăng nhập thất bại:", data);
-        }
-      })
-      .catch((error) => {
-        console.error("Lỗi khi gọi API:", error);
-      });
-  }
+        password: password.value
+      };
+
+      axios
+        .post("http://172.20.10.7:5001/login-user", userData)
+        .then(res => {
+          setIsLoading(false);
+          console.log(res.data);
+          if (res.data.status === "ok") {
+            Alert.alert("Đăng nhập thành công");
+            navigation.navigate('HomeScreen');
+            AsyncStorage.setItem('token', res.data.data);
+            AsyncStorage.setItem('Loggedin', JSON.stringify(true));
+          } else {
+            Alert.alert("Đăng nhập thất bại", res.data.error);
+          }
+        })
+        .catch(error => {
+          setIsLoading(false);
+          console.error(error);
+          Alert.alert("Lỗi", "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau.");
+        });
+    }
+  };
 
   return (
     <Background>
@@ -82,15 +82,17 @@ export default function LoginScreen({ navigation }) {
         secureTextEntry
       />
       <View style={styles.forgotPassword}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ResetPasswordScreen')}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate('ResetPasswordScreen')}>
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
-      <Button mode="contained" onPress={handleSubmit}>
-        Đăng nhập
-      </Button>
+      {isLoading ? (
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      ) : (
+        <TouchableOpacity onPress={handleSubmit}>
+          <Button mode="contained">Đăng nhập</Button>
+        </TouchableOpacity>
+      )}
       <View style={styles.row}>
         <Text>Chưa có tài khoản? </Text>
         <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
@@ -101,10 +103,10 @@ export default function LoginScreen({ navigation }) {
         <Text style={styles.loginServiceText}> Hoặc đăng nhập bằng</Text>
       </View>
       <View style={styles.loginService}>
-        <LoginService style={styles.LoginService} />
+        <LoginService />
       </View>
     </Background>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -135,4 +137,4 @@ const styles = StyleSheet.create({
   loginService: {
     height: 15,
   },
-})
+});
