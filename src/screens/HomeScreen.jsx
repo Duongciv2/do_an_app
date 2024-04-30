@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Calendar from './Calendar';
 import Task from '../components/Task';
 import Footer from '../components/footer';
-import ProfileScreen from './UpdateProfile'; // Thêm màn hình Profile
+import ProfileScreen from './ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -13,8 +13,7 @@ export default function HomeScreen() {
   <Tab.Navigator
     tabBarOptions={{
       style: {
-        position: 'absolute', // Thay đổi position thành absolute
-        bottom: 0, // Thêm bottom: 0 để đẩy thanh tab xuống dưới cùng
+        bottom: 0,
         left: 0,
         right: 0,
       },
