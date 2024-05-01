@@ -15,6 +15,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import localhost from "../Utils/LocalHost";
 
 function HomeScreen(props) {
   const navigation = useNavigation();
@@ -25,7 +26,7 @@ function HomeScreen(props) {
     const token = await AsyncStorage.getItem('token');
     console.log(token);
     axios
-      .post('http://172.20.10.7:5001/userdata', {token: token})
+      .post('http:172.20.10.7:5001/userdata', {token: token})
       .then(res => {
         console.log(res.data);
         setUserData(res.data.data);

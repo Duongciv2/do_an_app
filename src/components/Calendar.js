@@ -76,7 +76,7 @@ export default function Calendar() {
                           styles.item,
                           isActive && {
                             backgroundColor: Colors.PRIMARY,
-                            borderColor: '#111',
+                            borderColor: Colors.LESSPRIMARY,
                             justifyContent:'center'
                           },
                         ]}>
@@ -90,7 +90,7 @@ export default function Calendar() {
                         <Text
                           style={[
                             styles.itemDate,
-                            isActive && { color: '#fff' },
+                            isActive && { color: 'black',backgroundColor:'white', borderRadius:99, paddingHorizontal: 5 },
                           ]}>
                           {item.date.getDate()}
                         </Text>
@@ -102,19 +102,6 @@ export default function Calendar() {
             ))}
           </Swiper>
         </View>
-
-        {/* <View style={styles.footer}>
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}>
-            <View style={styles.btn}>
-              
-              <Ionicons name="add" size={30} color={Colors.WHITE}  />
-              
-            </View>
-          </TouchableOpacity>
-        </View> */}
       </View>
     //</SafeAreaView>
   );
@@ -125,11 +112,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 5,    
     alignItems:'center', justifyContent:'flex-start',
-    
+    backgroundColor: 'white',
+    borderRadius: 10,
+
   },
   header: {
     paddingHorizontal: 10,
-    alignItems: 'center'
+    alignItems: 'center',
     
   },
   title: {
@@ -149,12 +138,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   
   },
-  // footer: {
-  //   marginTop: 'auto',
-  //   paddingHorizontal: 16,
-  //   alignItems:'center',
-  //   justifyContent:'center'
-  // },
   /** Item */
   item: {
     flex: 1,
@@ -164,9 +147,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: '#e3e3e3',
+    borderColor: Colors.LESSPRIMARY,
     flexDirection: 'column',
     alignItems: 'center',
+    
   },
   itemRow: {
     width: width,
@@ -185,5 +169,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#111',
+    //borderWidth:0,
+    borderRadius:20,
+    //color: 'white'
+    
   }
 });

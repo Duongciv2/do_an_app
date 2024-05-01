@@ -12,6 +12,7 @@ import { emailValidator } from '../helpers/emailValidator';
 import { passwordValidator } from '../helpers/passwordValidator';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import localhost from "../Utils/LocalHost";
 
 export default function RegisterScreen({ navigation }) {
   const navigationHelper = useNavigation();
@@ -43,7 +44,7 @@ export default function RegisterScreen({ navigation }) {
 
     console.log("Dữ liệu người dùng:", userData);
     axios
-      .post("http://172.20.10.7:5001/register", userData)
+      .post("http://${localhost.localhost}:5001/register", userData)
       .then((res) => {
         console.log(res.data);
         navigationHelper.replace('LoginScreen');

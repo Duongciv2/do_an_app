@@ -13,6 +13,7 @@ import { emailValidator } from '../helpers/emailValidator';
 import { passwordValidator } from '../helpers/passwordValidator';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import localhost from "../Utils/LocalHost";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' });
